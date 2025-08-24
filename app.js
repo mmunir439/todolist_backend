@@ -11,7 +11,7 @@ connectDB();
 // Middleware
 app.use(express.json());
 const corsOptions = {
-  origin: "http://localhost:3000", // Allow requests from this origin
+  origin: process.env.FRONTEND_URL, // Allow requests from this origin
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   credentials: true, // Allow cookies if needed
 };

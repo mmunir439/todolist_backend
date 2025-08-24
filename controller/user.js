@@ -7,32 +7,39 @@ const bcrypt = require('bcrypt');
 exports.registeruser = async (req, res) => {
   try {
     const { username, email, password, cnic } = req.body;
+
+    // Hash the password
     const hashedPassword = await hashPassword(password);
+
+    // Create a new user
     const newUser = new User({ username, email, password: hashedPassword, cnic });
-       
+
+    // Save the user to the database
+    const savedUser = await newUser.save();
 
     // Send welcome email
     await sendEmail(
-  email,
-  "Welcome to Todolist App",
-  `
-  <div style="max-width:600px;margin:auto;padding:20px;background:#f9f9f9;border-radius:8px;font-family:sans-serif;">
-    <h1 style="color:#2d6cdf;text-align:center;">Welcome, ${username}!</h1>
-    <p style="font-size:16px;color:#333;">Your registration was successful.</p>
-    <p style="font-size:16px;color:#333;">This application will help you manage your tasks efficiently.</p>
-    <p style="font-size:16px;color:#333;">You can create, update, and track your to-do tasks easily.</p>
-    <p style="font-size:16px;color:#333;">
-      If you have any questions, feel free to contact our support team or visit 
-      <a href="https://munir-portfolio-iota.vercel.app/" style="color:#2d6cdf;">this link</a>.
-    </p>
-    <p style="font-size:16px;color:#333;">Thank you for joining us!</p>
-    <div style="text-align:center;margin-top:30px;">
-      <a href="https://munir-portfolio-iota.vercel.app/" style="background:#2d6cdf;color:#fff;padding:10px 20px;border-radius:5px;text-decoration:none;">Visit Our Website</a>
-    </div>
-  </div>
-  `
-);
+      email,
+      "Welcome to Todolist App",
+      `
+      <div style="max-width:600px;margin:auto;padding:20px;background:#f9f9f9;border-radius:8px;font-family:sans-serif;">
+        <h1 style="color:#2d6cdf;text-align:center;">Welcome, ${username}!</h1>
+        <p style="font-size:16px;color:#333;">Your registration was successful.</p>
+        <p style="font-size:16px;color:#333;">This application will help you manage your tasks efficiently.</p>
+        <p style="font-size:16px;color:#333;">You can create, update, and track your to-do tasks easily.</p>
+        <p style="font-size:16px;color:#333;">
+          If you have any questions, feel free to contact our support team or visit 
+          <a href="https://munir-portfolio-iota.vercel.app/" style="color:#2d6cdf;">this link</a>.
+        </p>
+        <p style="font-size:16px;color:#333;">Thank you for joining us!</p>
+        <div style="text-align:center;margin-top:30px;">
+          <a href="https://munir-portfolio-iota.vercel.app/" style="background:#2d6cdf;color:#fff;padding:10px 20px;border-radius:5px;text-decoration:none;">Visit Our Website</a>
+        </div>
+      </div>
+      `
+    );
 
+    // Send the saved user in the response
     res.status(201).json(savedUser);
   } catch (error) {
     res.status(400).json({ error: error.message });
