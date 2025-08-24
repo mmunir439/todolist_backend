@@ -10,10 +10,13 @@ const app = express();
 connectDB();
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
+const corsOptions = {
+  origin: "http://localhost:3000", // Allow requests from this origin
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+  credentials: true, // Allow cookies if needed
+};
+
+app.use(cors(corsOptions));
 app.get("/", (req, res) => {
   res.send("Welcome to the Todo API");
 });
