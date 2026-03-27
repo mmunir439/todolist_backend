@@ -19,8 +19,19 @@ exports.addtask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getallTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find();
 
-// Get all tasks for a user
+    console.log(tasks);
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+// Get all tasks for a specific user 
 exports.getTasks = async (req, res) => {
   try {
     const userId = req.user.userId; // Assuming `req.user` is populated by authentication middleware
