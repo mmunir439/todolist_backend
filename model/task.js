@@ -1,9 +1,17 @@
 const mongoose = require("mongoose");
-const taskSchema = new mongoose.Schema({
-  tasktitle: { type: String, required: true },
-  taskdescription: { type: String, required: true },
-  startdate: { type: Date, required: true }, // Use Date type
-  enddate: { type: Date, required: true },   // Use Date type
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true } // Add userId field
-});
+
+const taskSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true, maxlength: 500 },
+    description: { type: String, trim: true, default: "" },
+    status: { type: String, enum: ["todo", "done"], default: "todo" },
+    dueDate: { type: Date, default: null },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  },
+  { timestamps: true }
+);
+
+taskSchema.index({ userId: 1, status: 1 });
+taskSchema.index({ userId: 1, dueDate: 1 });
+
 module.exports = mongoose.model("Task", taskSchema);

@@ -1,27 +1,53 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const user = require('./routes/user');
-const task = require('./routes/task');
-const PORT = process.env.PORT || 3000;
-const connectDB = require('./utils/db');
-const app = express();
-// Connect to MongoDB
-connectDB();
-// Middleware
-app.use(express.json());
-const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Allow requests from this origin
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-  credentials: true, // Allow cookies if needed
-};
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const connectDB = require("./utils/db");
+const v1Routes = require("./routes/v1");
+const errorHandler = require("./middleware/errorHandler");
+const { sendError } = require("./utils/apiResponse");
 
-app.use(cors(corsOptions));
+const PORT = process.env.PORT || 3000;
+const app = express();
+
+connectDB();
+
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.get("/", (req, res) => {
-  res.send("Welcome to the Todo API");
+  res.json({
+    success: true,
+    message: "Todo API v1",
+    docs: "/api/v1",
+  });
 });
-app.use("/user", user);
-app.use("/task", task);
+
+app.get("/api/v1", (req, res) => {
+  res.json({
+    success: true,
+    message: "Todo API v1",
+    endpoints: {
+      auth: "/api/v1/auth",
+      tasks: "/api/v1/tasks",
+    },
+  });
+});
+
+app.use("/api/v1", v1Routes);
+
+app.use((req, res) => {
+  sendError(res, "Route not found", 404);
+});
+
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);
 });
