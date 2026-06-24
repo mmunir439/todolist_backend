@@ -2,9 +2,9 @@ const Joi = require("joi");
 
 const register = Joi.object({
   username: Joi.string().trim().min(2).max(50).required(),
+  shopName: Joi.string().trim().min(2).max(100),
   email: Joi.string().trim().email().required(),
   password: Joi.string().min(6).max(128).required(),
-  cnic: Joi.string().trim().optional(),
 });
 
 const login = Joi.object({
@@ -14,6 +14,7 @@ const login = Joi.object({
 
 const updateProfile = Joi.object({
   username: Joi.string().trim().min(2).max(50),
+  shopName: Joi.string().trim().min(2).max(100),
   email: Joi.string().trim().email(),
   password: Joi.string().min(6).max(128),
 }).min(1);

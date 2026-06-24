@@ -1,5 +1,7 @@
 const User = require("../model/user");
-const Task = require("../model/task");
+const Product = require("../model/product");
+const Customer = require("../model/customer");
+const Transaction = require("../model/transaction");
 const AppError = require("../utils/AppError");
 const { hashPassword, comparePassword } = require("../utils/hash");
 const { generateToken } = require("../utils/jwt");
@@ -7,28 +9,29 @@ const { generateToken } = require("../utils/jwt");
 const sanitizeUser = (user) => ({
   id: user._id,
   username: user.username,
+  shopName: user.shopName,
   email: user.email,
-  cnic: user.cnic,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
 
-exports.register = async ({ username, email, password, cnic }) => {
+exports.register = async ({ username, shopName, email, password }) => {
   const existing = await User.findOne({ email });
   if (existing) throw new AppError("Email already registered", 409);
 
   const hashedPassword = await hashPassword(password);
   const user = await User.create({
     username,
+    shopName: shopName || "Taneer Shop",
     email,
     password: hashedPassword,
-    cnic: cnic || "",
   });
 
   const token = generateToken({
     userId: user._id.toString(),
     email: user.email,
     username: user.username,
+    shopName: user.shopName,
   });
 
   return { user: sanitizeUser(user), token };
@@ -45,6 +48,7 @@ exports.login = async ({ email, password }) => {
     userId: user._id.toString(),
     email: user.email,
     username: user.username,
+    shopName: user.shopName,
   });
 
   return { user: sanitizeUser(user), token };
@@ -73,5 +77,9 @@ exports.updateProfile = async (userId, updates) => {
 exports.deleteAccount = async (userId) => {
   const user = await User.findByIdAndDelete(userId);
   if (!user) throw new AppError("User not found", 404);
-  await Task.deleteMany({ userId });
+  await Promise.all([
+    Product.deleteMany({ userId }),
+    Customer.deleteMany({ userId }),
+    Transaction.deleteMany({ userId }),
+  ]);
 };

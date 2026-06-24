@@ -24,7 +24,7 @@ app.use(
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Todo API v1",
+    message: "Taneer Shop Manager API",
     docs: "/api/v1",
   });
 });
@@ -32,10 +32,13 @@ app.get("/", (req, res) => {
 app.get("/api/v1", (req, res) => {
   res.json({
     success: true,
-    message: "Todo API v1",
+    message: "Taneer Shop Manager API v1",
     endpoints: {
       auth: "/api/v1/auth",
-      tasks: "/api/v1/tasks",
+      products: "/api/v1/products",
+      customers: "/api/v1/customers",
+      sales: "/api/v1/sales",
+      reports: "/api/v1/reports",
     },
   });
 });
@@ -49,5 +52,5 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}...`);
+  console.log(`Taneer Shop Manager running on port ${PORT}...`);
 });
